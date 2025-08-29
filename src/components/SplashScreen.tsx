@@ -1,0 +1,59 @@
+import React from 'react';
+import nasdaqLogo from '../assets/nasdaq-logo.svg';
+
+interface SplashScreenProps {
+  onComplete: () => void;
+}
+
+export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
+  React.useEffect(() => {
+    // Show splash for 1500ms
+    const timer = setTimeout(() => {
+      onComplete();
+    }, 1500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [onComplete]);
+
+  return (
+    <div className="fixed inset-0 bg-blue-900 flex items-center justify-center z-50 p-4">
+      <div className="text-center">
+        <div className="mb-8">
+          <img
+            src={nasdaqLogo}
+            alt="NASDAQ Logo"
+            className="h-32 md:h-64 mx-auto"
+          />
+        </div>
+
+        <h1 className="text-3xl md:text-6xl font-bold text-white mb-4">
+          Stock Market
+        </h1>
+
+        <p className="text-lg md:text-2xl text-blue-200">
+          Explore NASDAQ Stocks
+        </p>
+
+        <div className="mt-12">
+          <div className="flex space-x-2 justify-center">
+            <div className="w-2 h-2 md:w-3 md:h-3 bg-white rounded-full animate-ping"></div>
+            <div
+              className="w-2 h-2 md:w-3 md:h-3 bg-white rounded-full animate-ping"
+              style={{ animationDelay: '0.1s' }}></div>
+            <div
+              className="w-2 h-2 md:w-3 md:h-3 bg-white rounded-full animate-ping"
+              style={{ animationDelay: '0.2s' }}></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+        <h1 className="text-white text-sm md:text-lg opacity-80">
+          Developed by Khaled Ashraf
+        </h1>
+      </div>
+    </div>
+  );
+};
