@@ -10,8 +10,8 @@ export const queryClient = new QueryClient({
         }
         return failureCount < 2;
       },
-      staleTime: 10 * 60 * 1000, // 10 minutes
-      gcTime: 30 * 60 * 1000, // 30 minutes
+      staleTime: 10 * 60 * 1000,
+      gcTime: 30 * 60 * 1000,
     },
   },
 });

@@ -1,13 +1,16 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useInfiniteQuery, type InfiniteData } from '@tanstack/react-query';
 import { API_KEY, API_BASE_URL } from '@/constants';
 import type { Ticker, TickersResponse, UseTickersReturn } from '@/types/ticker';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import { showRateLimitToast } from '@/components/Toast/RateLimitToast';
+import toast from 'react-hot-toast';
 
 const TICKERS_PAGE_SIZE = 50;
 const DEBOUNCE_DELAY_MS = 400;
 const MARKET_TYPE = 'stocks' as const;
 const ACTIVE_STOCKS_ONLY = true as const;
+const RATE_LIMIT_DURATION = 20;
 
 const fetchTickers = async (
   search: string,
@@ -30,7 +33,6 @@ const fetchTickers = async (
   });
 
   if (!response.ok) {
-    // Handle specific error cases
     switch (response.status) {
       case 429:
         throw new Error(
@@ -55,10 +57,11 @@ const fetchTickers = async (
 
 export const useInfiniteTickers = (): UseTickersReturn => {
   const [search, setSearch] = useState('');
+  const [isRateLimited, setIsRateLimited] = useState(false);
+  const [countdown, setCountdown] = useState(0);
 
   const debouncedSearch = useDebouncedValue(search, DEBOUNCE_DELAY_MS);
 
-  // React Query: infinite query for cursor-based pagination
   const {
     data,
     error: queryError,
@@ -85,7 +88,6 @@ export const useInfiniteTickers = (): UseTickersReturn => {
     initialPageParam: undefined,
   });
 
-  // Derive UI values directly from query data
   const pages = data?.pages ?? [];
   const tickers: Ticker[] = pages.flatMap((p) => p.results);
   const lastPage = data?.pages?.[data.pages.length - 1];
@@ -94,14 +96,71 @@ export const useInfiniteTickers = (): UseTickersReturn => {
   const error = queryError instanceof Error ? queryError.message : null;
 
   const loadMore = useCallback(() => {
-    if (hasNextPage) {
+    if (hasNextPage && !isRateLimited) {
       void fetchNextPage();
     }
-  }, [hasNextPage, fetchNextPage]);
+  }, [hasNextPage, fetchNextPage, isRateLimited]);
 
   const refetch = useCallback(() => {
-    void rqRefetch();
-  }, [rqRefetch]);
+    if (!isRateLimited) {
+      void rqRefetch();
+    }
+  }, [rqRefetch, isRateLimited]);
+
+  const retryFetchingFailedPage = useCallback(() => {
+    console.log('retryFetchingFailedPage', isRateLimited);
+
+    if (isRateLimited) {
+      setIsRateLimited(false);
+      console.log('retryFetchingFailedPage');
+
+      if (tickers.length > 0) {
+        console.log('loadMore');
+        void fetchNextPage();
+      } else {
+        console.log('refetch');
+        void rqRefetch();
+      }
+    }
+  }, [isRateLimited, tickers.length, fetchNextPage, rqRefetch]);
+
+  useEffect(() => {
+    if (queryError?.message.includes('Rate limit')) {
+      setIsRateLimited(true);
+      setCountdown(RATE_LIMIT_DURATION);
+    }
+  }, [queryError]);
+
+  useEffect(() => {
+    if (!isRateLimited || countdown <= 0) return;
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isRateLimited, countdown]);
+
+  useEffect(() => {
+    if (isRateLimited) {
+      showRateLimitToast(
+        'rate-limit-toast',
+        countdown,
+        retryFetchingFailedPage,
+      );
+    }
+  }, [isRateLimited, countdown, retryFetchingFailedPage]);
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss('rate-limit-toast');
+    };
+  }, []);
 
   return {
     tickers,
