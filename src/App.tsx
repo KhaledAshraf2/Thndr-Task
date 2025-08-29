@@ -2,9 +2,9 @@ import { useInfiniteTickers } from '@/hooks/useInfiniteTickers';
 import { SplashScreen } from '@/components/SplashScreen';
 
 function App() {
-  const { tickers, isInitialLoading } = useInfiniteTickers();
+  const { tickers, isInitialLoading, error } = useInfiniteTickers();
 
-  const shouldShowSplash = isInitialLoading || tickers.length === 0;
+  const shouldShowSplash = isInitialLoading || (tickers.length === 0 && !error);
 
   return (
     <>

@@ -30,12 +30,23 @@ const fetchTickers = async (
   });
 
   if (!response.ok) {
-    if (response.status === 429) {
-      throw new Error('Rate limit exceeded. Please try again in a moment.');
+    // Handle specific error cases
+    switch (response.status) {
+      case 429:
+        throw new Error(
+          'Rate limit exceeded. Please wait a moment and try again.',
+        );
+      case 401:
+        throw new Error('Invalid API key. Please check your configuration.');
+      case 403:
+        throw new Error('Access denied. Please check your API permissions.');
+      case 500:
+        throw new Error('Server error. Please try again later.');
+      default:
+        throw new Error(
+          `API request failed: ${response.status} ${response.statusText}`,
+        );
     }
-    throw new Error(
-      `API request failed: ${response.status} ${response.statusText}`,
-    );
   }
 
   const data = (await response.json()) as TickersResponse;
