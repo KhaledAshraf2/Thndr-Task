@@ -1,5 +1,4 @@
 import React from 'react';
-import nasdaqLogo from '../assets/nasdaq-logo.svg';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -22,7 +21,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
       <div className="text-center">
         <div className="mb-8">
           <img
-            src={nasdaqLogo}
+            src="/nasdaq-logo.svg"
             alt="NASDAQ Logo"
             className="h-32 md:h-64 mx-auto"
           />
