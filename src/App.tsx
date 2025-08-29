@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { SplashScreen } from '@/components/SplashScreen';
+import { API_BASE_URL, API_KEY } from '@/constants';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -11,6 +12,7 @@ function App() {
   if (showSplash) {
     return <SplashScreen onComplete={handleSplashComplete} />;
   }
+  console.log('App is running', API_BASE_URL, API_KEY);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

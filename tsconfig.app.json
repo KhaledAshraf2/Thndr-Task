@@ -36,6 +36,9 @@
       "@/*": [
         "src/*"
       ],
+      "@/constants/*": [
+        "src/constants/*"
+      ],
       "@/components/*": [
         "src/components/*"
       ],
