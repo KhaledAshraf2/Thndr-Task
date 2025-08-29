@@ -1,23 +1,34 @@
 import React from 'react';
 
 interface SplashScreenProps {
-  onComplete: () => void;
+  isLoading: boolean;
 }
 
-export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
+export const SplashScreen: React.FC<SplashScreenProps> = ({ isLoading }) => {
+  const [shouldRemove, setShouldRemove] = React.useState(false);
+
   React.useEffect(() => {
-    // Show splash for 1500ms
-    const timer = setTimeout(() => {
-      onComplete();
-    }, 1500);
+    if (isLoading) {
+      return;
+    }
+    const removeTimer = setTimeout(() => {
+      setShouldRemove(true);
+    }, 500);
 
     return () => {
-      clearTimeout(timer);
+      clearTimeout(removeTimer);
     };
-  }, [onComplete]);
+  }, [isLoading]);
+
+  if (shouldRemove) {
+    return null;
+  }
 
   return (
-    <div className="fixed inset-0 bg-blue-900 flex items-center justify-center z-50 p-4">
+    <div
+      className={`fixed inset-0 bg-blue-900 flex items-center justify-center p-4 transition-opacity duration-500 ${
+        isLoading ? 'opacity-100' : 'opacity-0'
+      }`}>
       <div className="text-center">
         <div className="mb-8">
           <img

@@ -1,4 +1,4 @@
 {
-  "buildCommand": "yarn lint && yarn tsc --noEmit && yarn test:run && vite build",
+  "buildCommand": "yarn lint && yarn type-check && yarn test:run && vite build",
   "outputDirectory": "dist"
 }
