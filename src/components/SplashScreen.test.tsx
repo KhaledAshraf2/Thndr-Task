@@ -11,6 +11,6 @@ describe('SplashScreen', () => {
     expect(screen.getByText('Stock Market')).toBeInTheDocument();
     expect(screen.getByText('Explore NASDAQ Stocks')).toBeInTheDocument();
     expect(screen.getByText('Developed by Khaled Ashraf')).toBeInTheDocument();
-    expect(screen.getByAltText('NASDAQ Logoo')).toBeInTheDocument();
+    expect(screen.getByAltText('NASDAQ Logo')).toBeInTheDocument();
   });
 });
