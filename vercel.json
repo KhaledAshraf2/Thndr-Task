@@ -1,0 +1,4 @@
+{
+  "buildCommand": "yarn lint && tsc -b && yarn test:run && vite build",
+  "outputDirectory": "dist"
+}
