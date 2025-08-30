@@ -108,26 +108,25 @@ export const useInfiniteTickers = (): UseTickersReturn => {
   }, [rqRefetch, isRateLimited]);
 
   const retryFetchingFailedPage = useCallback(() => {
-    console.log('retryFetchingFailedPage', isRateLimited);
-
     if (isRateLimited) {
       setIsRateLimited(false);
-      console.log('retryFetchingFailedPage');
 
       if (tickers.length > 0) {
-        console.log('loadMore');
         void fetchNextPage();
       } else {
-        console.log('refetch');
         void rqRefetch();
       }
     }
   }, [isRateLimited, tickers.length, fetchNextPage, rqRefetch]);
 
   useEffect(() => {
-    if (queryError?.message.includes('Rate limit')) {
+    if (!queryError) return;
+
+    if (queryError.message.includes('Rate limit')) {
       setIsRateLimited(true);
       setCountdown(RATE_LIMIT_DURATION);
+    } else {
+      toast.error(queryError.message);
     }
   }, [queryError]);
 
