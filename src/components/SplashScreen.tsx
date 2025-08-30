@@ -26,7 +26,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ isLoading }) => {
 
   return (
     <div
-      className={`fixed inset-0 bg-blue-900 flex items-center justify-center p-4 transition-opacity duration-500 ${
+      className={`fixed z-50 w-full h-full bg-blue-900 flex flex-col items-center justify-between p-4 transition-opacity duration-500 ${
         isLoading ? 'opacity-100' : 'opacity-0'
       }`}>
       <div className="text-center">
@@ -59,7 +59,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ isLoading }) => {
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+      <div className="text-center">
         <h1 className="text-white text-sm md:text-lg opacity-80">
           Developed by Khaled Ashraf
         </h1>

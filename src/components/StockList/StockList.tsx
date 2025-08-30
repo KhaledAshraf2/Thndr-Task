@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { StockCard } from '@/components/StockCard';
-import { SkeletonCard, EmptyState } from '@/components/LoadingStates';
+import { SkeletonCard, NoResults } from '@/components/LoadingStates';
 import type { StockListProps } from '@/types/components';
 
 const ITEM_HEIGHT = {
@@ -45,7 +45,7 @@ export const StockList: React.FC<StockListProps> = ({
   }, [hasMore, loading, onLoadMore]);
 
   if (tickers.length === 0 && !loading) {
-    return <EmptyState />;
+    return <NoResults />;
   }
 
   return (
