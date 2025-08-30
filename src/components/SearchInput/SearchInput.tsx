@@ -5,8 +5,6 @@ interface SearchInputProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
-  className?: string;
-  disabled?: boolean;
   isSearching?: boolean;
 }
 
@@ -14,15 +12,11 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   value,
   onChange,
   placeholder = 'Search stocks...',
-  className = '',
-  disabled = false,
   isSearching = false,
 }) => {
   return (
     <div
-      className={`flex items-center bg-gray-800 border border-gray-600 rounded-lg transition-all duration-200 hover:border-gray-500 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-400/20 ${
-        disabled ? 'opacity-50 cursor-not-allowed' : ''
-      } ${className}`}>
+      className={`flex items-center bg-gray-800 border border-gray-600 rounded-lg transition-all duration-200 hover:border-gray-500 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-400/20`}>
       <div className="flex items-center pl-3 pointer-events-none">
         {isSearching ? (
           <SpinnerIcon className="w-4 h-4 md:w-5 md:h-5 text-blue-400 animate-spin" />
@@ -36,11 +30,10 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        disabled={disabled}
         className="flex-1 px-3 py-2.5 md:py-3 text-sm md:text-base bg-transparent text-white placeholder-gray-400 focus:outline-none disabled:cursor-not-allowed"
       />
 
-      {value.length > 0 && !disabled && (
+      {value.length > 0 && (
         <button
           type="button"
           onClick={() => onChange('')}

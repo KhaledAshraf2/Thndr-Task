@@ -18,12 +18,11 @@ export const StocksPage: React.FC = () => {
           NASDAQ Stock Explorer
         </h1>
 
-        <div className="max-w-md mx-auto mb-8">
+        <div className="w-full max-w-xs md:max-w-xl mx-auto mb-8 px-4 md:px-6">
           <SearchInput
             value={search}
             onChange={setSearch}
             placeholder="Search NASDAQ stocks..."
-            disabled={isLoading}
             isSearching={isLoading && search.length > 0}
           />
         </div>
@@ -40,12 +39,11 @@ export const StocksPage: React.FC = () => {
           NASDAQ Stock Explorer
         </h1>
 
-        <div className="sticky top-4 z-10 max-w-md mx-auto mb-6">
+        <div className="sticky top-4 z-10 w-full max-w-xs md:max-w-xl mx-auto mb-6 px-4 md:px-6">
           <SearchInput
             value={search}
             onChange={setSearch}
             placeholder="Search NASDAQ stocks..."
-            disabled={isLoading}
             isSearching={isLoading && search.length > 0}
           />
         </div>
