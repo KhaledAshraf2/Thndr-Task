@@ -22,13 +22,10 @@ export interface TickersResponse {
 
 export interface UseTickersReturn {
   tickers: Ticker[];
-  loading: boolean;
-  isInitialLoading: boolean;
-  isFetching: boolean;
+  isLoading: boolean;
   error: string | null;
   hasMore: boolean;
   loadMore: () => void;
-  refetch: () => void;
   search: string;
   setSearch: (search: string) => void;
 }

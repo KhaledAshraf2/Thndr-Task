@@ -10,7 +10,7 @@ const TICKERS_PAGE_SIZE = 50;
 const DEBOUNCE_DELAY_MS = 400;
 const MARKET_TYPE = 'stocks' as const;
 const ACTIVE_STOCKS_ONLY = true as const;
-const RATE_LIMIT_DURATION = 20;
+const RATE_LIMIT_COUNTDOWN_DURATION = 20;
 
 const fetchTickers = async (
   search: string,
@@ -57,8 +57,8 @@ const fetchTickers = async (
 
 export const useInfiniteTickers = (): UseTickersReturn => {
   const [search, setSearch] = useState('');
-  const [isRateLimited, setIsRateLimited] = useState(false);
   const [countdown, setCountdown] = useState(0);
+  const [hasStartedCountdown, setHasStartedCountdown] = useState(false);
 
   const debouncedSearch = useDebouncedValue(search, DEBOUNCE_DELAY_MS);
 
@@ -66,10 +66,7 @@ export const useInfiniteTickers = (): UseTickersReturn => {
     data,
     error: queryError,
     isFetching,
-    isLoading,
     fetchNextPage,
-    hasNextPage,
-    refetch: rqRefetch,
   } = useInfiniteQuery<
     TickersResponse,
     Error,
@@ -92,43 +89,53 @@ export const useInfiniteTickers = (): UseTickersReturn => {
   const tickers: Ticker[] = pages.flatMap((p) => p.results);
   const lastPage = data?.pages?.[data.pages.length - 1];
   const hasMore = Boolean(lastPage?.next_url);
-  const loading = isLoading || isFetching;
   const error = queryError instanceof Error ? queryError.message : null;
+  const isRateLimited =
+    queryError instanceof Error && queryError.message.includes('Rate limit');
 
   const loadMore = useCallback(() => {
-    if (hasNextPage && !isRateLimited) {
+    if (hasMore && !(isRateLimited && countdown > 0) && !isFetching) {
       void fetchNextPage();
     }
-  }, [hasNextPage, fetchNextPage, isRateLimited]);
+  }, [hasMore, fetchNextPage, isRateLimited, countdown, isFetching]);
 
-  const refetch = useCallback(() => {
-    if (!isRateLimited) {
-      void rqRefetch();
+  const retryAfterRateLimit = useCallback(() => {
+    if (isRateLimited && !isFetching && countdown === 0) {
+      setHasStartedCountdown(false);
+      void fetchNextPage();
     }
-  }, [rqRefetch, isRateLimited]);
-
-  const retryFetchingFailedPage = useCallback(() => {
-    if (isRateLimited) {
-      setIsRateLimited(false);
-
-      if (tickers.length > 0) {
-        void fetchNextPage();
-      } else {
-        void rqRefetch();
-      }
-    }
-  }, [isRateLimited, tickers.length, fetchNextPage, rqRefetch]);
+  }, [isRateLimited, fetchNextPage, isFetching, countdown]);
 
   useEffect(() => {
-    if (!queryError) return;
+    if (!queryError) {
+      toast.dismiss('rate-limit-toast');
+      setHasStartedCountdown(false);
+      setCountdown(0);
+      return;
+    }
 
-    if (queryError.message.includes('Rate limit')) {
-      setIsRateLimited(true);
-      setCountdown(RATE_LIMIT_DURATION);
+    if (isRateLimited) {
+      if (!hasStartedCountdown) {
+        setCountdown(RATE_LIMIT_COUNTDOWN_DURATION);
+        setHasStartedCountdown(true);
+      }
+      showRateLimitToast(
+        'rate-limit-toast',
+        countdown,
+        retryAfterRateLimit,
+        isFetching,
+      );
     } else {
       toast.error(queryError.message);
     }
-  }, [queryError]);
+  }, [
+    queryError,
+    hasStartedCountdown,
+    countdown,
+    retryAfterRateLimit,
+    isFetching,
+    isRateLimited,
+  ]);
 
   useEffect(() => {
     if (!isRateLimited || countdown <= 0) return;
@@ -146,14 +153,11 @@ export const useInfiniteTickers = (): UseTickersReturn => {
   }, [isRateLimited, countdown]);
 
   useEffect(() => {
-    if (isRateLimited) {
-      showRateLimitToast(
-        'rate-limit-toast',
-        countdown,
-        retryFetchingFailedPage,
-      );
+    if (!isRateLimited && (countdown > 0 || hasStartedCountdown)) {
+      setCountdown(0);
+      setHasStartedCountdown(false);
     }
-  }, [isRateLimited, countdown, retryFetchingFailedPage]);
+  }, [isRateLimited, countdown, hasStartedCountdown]);
 
   useEffect(() => {
     return () => {
@@ -163,13 +167,10 @@ export const useInfiniteTickers = (): UseTickersReturn => {
 
   return {
     tickers,
-    loading,
-    isInitialLoading: isLoading,
-    isFetching,
+    isLoading: isFetching,
     error,
     hasMore,
     loadMore,
-    refetch,
     search,
     setSearch,
   };
