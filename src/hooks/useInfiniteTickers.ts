@@ -94,10 +94,10 @@ export const useInfiniteTickers = (): UseTickersReturn => {
     queryError instanceof Error && queryError.message.includes('Rate limit');
 
   const loadMore = useCallback(() => {
-    if (hasMore && !(isRateLimited && countdown > 0) && !isFetching) {
+    if (hasMore && !isRateLimited && !isFetching) {
       void fetchNextPage();
     }
-  }, [hasMore, fetchNextPage, isRateLimited, countdown, isFetching]);
+  }, [hasMore, fetchNextPage, isRateLimited, isFetching]);
 
   const retryAfterRateLimit = useCallback(() => {
     if (isRateLimited && !isFetching && countdown === 0) {
