@@ -49,10 +49,8 @@ export const StockList: React.FC<StockListProps> = ({
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <div
-        ref={parentRef}
-        className="h-[calc(100vh-200px)] overflow-auto contain-strict">
+    <div className="w-full max-w-4xl mx-auto h-full">
+      <div ref={parentRef} className="h-full overflow-auto contain-strict">
         <div
           style={{
             height: `${virtualizer.getTotalSize()}px`,

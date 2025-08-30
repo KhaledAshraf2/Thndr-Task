@@ -11,7 +11,7 @@ function App() {
     <>
       <SplashScreen isLoading={shouldShowSplash} />
 
-      <div className="min-h-screen bg-gray-900">
+      <div className="h-screen bg-gray-900 overflow-hidden">
         <StocksPage />
       </div>
     </>

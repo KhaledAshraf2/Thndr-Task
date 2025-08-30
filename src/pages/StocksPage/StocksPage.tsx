@@ -13,7 +13,7 @@ export const StocksPage: React.FC = () => {
 
   if (tickers.length === 0 && !isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="h-full flex flex-col container mx-auto px-4 py-4">
         <h1 className="text-3xl font-bold text-white mb-8 text-center">
           NASDAQ Stock Explorer
         </h1>
@@ -35,7 +35,7 @@ export const StocksPage: React.FC = () => {
 
   return (
     <>
-      <div className="container mx-auto px-4 py-8">
+      <div className="h-full flex flex-col container mx-auto px-4 py-4">
         <h1 className="text-3xl font-bold text-white mb-8 text-center">
           NASDAQ Stock Explorer
         </h1>
